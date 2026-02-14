@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가문의 숫자 리듬</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-orbs">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <div class="container">
+        <div class="glass-panel" id="main-panel">
+            <header>
+                <h1>가문의 숫자 리듬</h1>
+                <p class="subtitle">당신의 고유한 생체 리듬을 발견하세요</p>
+            </header>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-mode="verify">지혜의 기록 (검증)</button>
+                <button class="tab-btn" data-mode="predict">미래의 리듬 (예측)</button>
+            </div>
+
+            <div class="input-section">
+                <div class="input-group">
+                    <label>아빠가 세상에 오신 날</label>
+                    <div class="wheel-date-picker" id="dad-picker"></div>
+                </div>
+
+                <div class="input-group">
+                    <label>엄마가 세상에 오신 날</label>
+                    <div class="wheel-date-picker" id="mom-picker"></div>
+                </div>
+
+                <!-- Verification Mode Input -->
+                <div class="input-group" id="verify-group">
+                    <label>자녀가 세상에 오신 날</label>
+                    <div class="wheel-date-picker" id="child-picker"></div>
+                </div>
+
+                <!-- Prediction Mode Input -->
+                <div class="input-group hidden" id="predict-group">
+                    <label>임신을 희망하는 해 (년도)</label>
+                    <input type="number" id="predict-year" min="2025" max="2040" value="2026" placeholder="예: 2026">
+                </div>
+
+                <button class="action-btn" id="calc-btn">조화의 리듬 보기</button>
+            </div>
+
+            <!-- Slot Machine Loading -->
+            <div id="loading-area" class="hidden">
+                <div class="sparkle-container"></div>
+                <div class="slot-machine">
+                    <div class="slot-window">
+                        <span class="slot-number">0</span>
+                        <span class="slot-number">1</span>
+                        <span class="slot-number">2</span>
+                    </div>
+                </div>
+                <p class="loading-text">별들의 조화를 분석 중입니다...</p>
+            </div>
+
+            <div id="result-area">
+                <h2 class="result-title"></h2>
+                <p class="result-desc"></p>
+
+                <div id="feedback-section" class="hidden">
+                    <p class="feedback-ask">결과가 실제와 일치했나요?</p>
+                    <div class="feedback-buttons">
+                        <button class="feedback-btn yes" data-correct="true">지혜가 맞았습니다</button>
+                        <button class="feedback-btn no" data-correct="false">새로운 흐름입니다</button>
+                    </div>
+                </div>
+                <p id="thank-you-msg" class="hidden">소중한 경험을 나누어 주셔서 감사합니다.</p>
+            </div>
+
+            <!-- Confirmation Modal -->
+            <div id="confirm-modal" class="modal-overlay hidden">
+                <div class="glass-panel modal-content">
+                    <p class="modal-text" id="confirm-text"></p>
+                    <p class="modal-subtext">정보가 맞습니까?</p>
+                    <div class="modal-buttons">
+                        <button class="action-btn modal-btn confirm" id="confirm-yes">네, 맞습니다</button>
+                        <button class="action-btn modal-btn cancel" id="confirm-no">아니요, 다시 입력할게요</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
