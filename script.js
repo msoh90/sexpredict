@@ -179,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Pickers
     datePickers.dad = new WheelDatePicker('dad-picker', 1950, 2010, 1990);
     datePickers.mom = new WheelDatePicker('mom-picker', 1950, 2010, 1992);
-    datePickers.child = new WheelDatePicker('child-picker', 2000, 2030, 2026);
+    datePickers.child = new WheelDatePicker('child-picker', 1950, 2030, 2026);
 
     // --- App Logic ---
     const setMode = (newMode) => {
