@@ -6,6 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>가문의 숫자 리듬</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1e1b4b">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./service-worker.js')
+                    .then(reg => console.log('Service Worker Registered!', reg))
+                    .catch(err => console.log('Service Worker Registration Failed', err));
+            });
+        }
+    </script>
 </head>
 
 <body>
@@ -90,6 +102,14 @@
                     </div>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <div id="install-banner" class="hidden">
+        <div class="install-content">
+            <p>앱으로 설치하고 더 편리하게 이용하세요!</p>
+            <button id="install-btn">앱 설치하기</button>
+            <button id="install-close">닫기</button>
         </div>
     </div>
 

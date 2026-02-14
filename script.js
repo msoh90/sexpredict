@@ -363,4 +363,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     calcBtn.addEventListener('click', calculateRhythm);
     tabs.forEach(tab => tab.addEventListener('click', (e) => setMode(e.target.dataset.mode)));
+
+    /* --- PWA Install Logic --- */
+    let deferredPrompt;
+    const installBanner = document.getElementById('install-banner');
+    const installBtn = document.getElementById('install-btn');
+    const installClose = document.getElementById('install-close');
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+        // Prevent older browsers from showing the prompt automatically
+        e.preventDefault();
+        deferredPrompt = e;
+        // Show our banner
+        installBanner.classList.remove('hidden');
+    });
+
+    if (installBtn) {
+        installBtn.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+
+            installBanner.classList.add('hidden');
+            deferredPrompt.prompt();
+
+            const { outcome } = await deferredPrompt.userChoice;
+            console.log(`User response to the install prompt: ${outcome}`);
+            deferredPrompt = null;
+        });
+    }
+
+    if (installClose) {
+        installClose.addEventListener('click', () => {
+            installBanner.classList.add('hidden');
+        });
+    }
 });

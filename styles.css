@@ -738,3 +738,73 @@ input[type="number"]#predict-year:focus {
 .hidden {
     display: none !important;
 }
+
+/* Install Banner */
+#install-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: rgba(30, 27, 75, 0.95);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem;
+    display: flex;
+    /* controlled by JS mostly, but flex layout */
+    justify-content: center;
+    z-index: 1000;
+    animation: slideUp 0.5s ease-out;
+    backdrop-filter: blur(10px);
+}
+
+.install-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    max-width: 600px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.install-content p {
+    color: #fff;
+    font-size: 0.95rem;
+    margin: 0;
+    font-family: 'Noto Serif KR', serif;
+}
+
+#install-btn {
+    background: var(--accent-blue);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+}
+
+#install-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(96, 165, 250, 0.3);
+}
+
+#install-close {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ccc;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
