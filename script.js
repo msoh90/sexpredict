@@ -21,6 +21,8 @@ document.addEventListener('DOMContentLoaded', () => {
         child: null
     };
 
+    let isLogged = false; // Flag to prevent multi-save per calculation
+
     // --- Wheel Picker Logic ---
     class WheelDatePicker {
         constructor(containerId, startYear = 1950, endYear = 2030, defaultYear = 1990) {
@@ -199,13 +201,30 @@ document.addEventListener('DOMContentLoaded', () => {
         mainPanel.className = 'glass-panel';
     };
 
+    const resetToLanding = () => {
+        setTimeout(() => {
+            // Hide result area
+            resultArea.classList.remove('visible');
+            // Reset background
+            mainPanel.className = 'glass-panel';
+            // Hide messages
+            document.getElementById('thank-you-msg').classList.add('hidden');
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            // Reset state
+            isLogged = false;
+        }, 3000); // 3-second delay
+    };
+
     const getYear = (picker) => {
         return picker.selected.year;
     };
 
     let pendingRemainder = null; // Store result for confirmation
+    let isCorrected = false; // Flag for special algorithm
 
     const calculateRhythm = () => {
+        isLogged = false; // Reset logging flag for new calculation
         const dadYear = getYear(datePickers.dad);
         const momYear = getYear(datePickers.mom);
 
@@ -223,8 +242,20 @@ document.addEventListener('DOMContentLoaded', () => {
             conceptionYear = pYear;
         }
 
-        const dadAge = conceptionYear - dadYear;
-        const momAge = conceptionYear - momYear;
+        let dadAge = conceptionYear - dadYear;
+        let momAge = conceptionYear - momYear;
+
+        // --- NEW: Age Correction Logic (Verify Mode) ---
+        isCorrected = false;
+        if (mode === 'verify') {
+            const childMonth = datePickers.child.selected.month;
+            if (childMonth >= 10) {
+                dadAge += 1;
+                momAge += 1;
+                isCorrected = true;
+            }
+        }
+        // ----------------------------------------------
 
         // Confirmation Logic
         const confirmModal = document.getElementById('confirm-modal');
@@ -301,6 +332,12 @@ document.addEventListener('DOMContentLoaded', () => {
             loadingArea.classList.add('hidden');
             displayResult(pendingRemainder);
             playDingDong(); // Play sound
+
+            if (mode === 'predict') {
+                const pred = pendingRemainder === 0 ? '딸' : (pendingRemainder === 1 ? '아들' : '조화');
+                saveAllToSheet('', pred); // In predict mode, actualSex is empty
+                resetToLanding(); // Redirect in predict mode
+            }
         }, 2500); // 2.5s delay
     });
 
@@ -339,27 +376,111 @@ document.addEventListener('DOMContentLoaded', () => {
             // Trigger Fade-In Up
             resultArea.classList.add('visible');
 
-            // Feedback Logic
-            const feedbackSection = document.getElementById('feedback-section');
-            const thankYouMsg = document.getElementById('thank-you-msg');
-            feedbackSection.classList.add('hidden');
-            thankYouMsg.classList.add('hidden');
-
+            // --- Specialized Feedback for Verify Mode ---
             if (mode === 'verify') {
-                setTimeout(() => {
+                const feedbackSection = document.getElementById('feedback-section');
+                const harmonyFeedback = document.getElementById('harmony-feedback');
+
+                if (pendingRemainder === 2) {
+                    // Balance case: Ask for sex directly
+                    feedbackSection.classList.add('hidden');
+                    harmonyFeedback.classList.remove('hidden');
+                } else {
+                    // Normal case: Ask if correct
                     feedbackSection.classList.remove('hidden');
-                }, 1200); // Delay feedback appearance slightly after result
+                    harmonyFeedback.classList.add('hidden');
+                }
+            } else {
+                // Predict mode: hide all feedback
+                document.getElementById('feedback-section').classList.add('hidden');
+                document.getElementById('harmony-feedback').classList.add('hidden');
             }
+            // --------------------------------------------
         }, 50);
+    };
+
+    // Centralized Google Sheets Save Function
+    const saveAllToSheet = (actualSexVal, predictionVal) => {
+        const dadDate = datePickers.dad.getDate();
+        const momDate = datePickers.mom.getDate();
+        let childDate = null;
+        let conceptionYear = null;
+
+        if (mode === 'verify') {
+            childDate = datePickers.child.getDate();
+        } else {
+            conceptionYear = document.getElementById('predict-year').value;
+        }
+
+        const payload = {
+            dadDate,
+            momDate,
+            childDate,
+            conceptionYear,
+            prediction: predictionVal,
+            actualSex: actualSexVal,
+            mode: mode === 'verify' ? '검증' : '예측'
+        };
+
+        console.log('[DEBUG] Final Save Payload:', payload);
+
+        fetch('http://localhost:3000/api/record-harmony', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+            .then(res => res.json())
+            .then(data => console.log('Complete Save Success:', data))
+            .catch(err => console.error('Complete Save Error:', err));
     };
 
     // Feedback Listeners
     document.querySelectorAll('.feedback-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
+            if (isLogged) return; // Prevent multiple saves
+            const isCorrect = e.currentTarget.dataset.correct === 'true';
+
+            // Clear UI
             document.getElementById('feedback-section').classList.add('hidden');
+            document.getElementById('harmony-feedback').classList.add('hidden');
             document.getElementById('thank-you-msg').classList.remove('hidden');
+
+            const predictionStr = pendingRemainder === 0 ? '딸' : (pendingRemainder === 1 ? '아들' : '조화');
+            let userChoice = '';
+
+            if (isCorrect) {
+                userChoice = predictionStr;
+            } else {
+                if (pendingRemainder === 0) userChoice = '아들';
+                else if (pendingRemainder === 1) userChoice = '딸';
+                else userChoice = '확인불가'; // Case for '조화' being incorrect
+            }
+
+            // Save once after feedback
+            saveAllToSheet(userChoice, predictionStr);
+            isLogged = true;
+            resetToLanding(); // Auto-redirect after save
         });
     });
+
+    // --- NEW: Harmony Choice Listeners ---
+    document.querySelectorAll('.harmony-choice').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            if (isLogged) return;
+            const chosenSex = e.currentTarget.dataset.sex;
+
+            // Clear UI
+            document.getElementById('harmony-feedback').classList.add('hidden');
+            document.getElementById('thank-you-msg').classList.remove('hidden');
+
+            // Save to sheet: actual is user's choice, prediction is '조화'
+            saveAllToSheet(chosenSex, '조화');
+            isLogged = true;
+
+            resetToLanding(); // Auto-redirect after harmony save
+        });
+    });
+    // -------------------------------------
 
     calcBtn.addEventListener('click', calculateRhythm);
     tabs.forEach(tab => tab.addEventListener('click', (e) => setMode(e.target.dataset.mode)));

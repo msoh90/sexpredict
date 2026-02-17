@@ -37,6 +37,7 @@
                 <button class="tab-btn active" data-mode="verify">지혜의 기록 (검증)</button>
                 <button class="tab-btn" data-mode="predict">미래의 리듬 (예측)</button>
             </div>
+            <p class="tab-notice">생년월일은 양력으로 입력해 주세요</p>
 
             <div class="input-section">
                 <div class="input-group">
@@ -88,6 +89,14 @@
                         <button class="feedback-btn no" data-correct="false">새로운 흐름입니다</button>
                     </div>
                 </div>
+
+                <div id="harmony-feedback" class="hidden">
+                    <p class="feedback-ask">실제 자녀의 성별은 무엇인가요?</p>
+                    <div class="feedback-buttons">
+                        <button class="feedback-btn harmony-choice blue" data-sex="아들">아들</button>
+                        <button class="feedback-btn harmony-choice pink" data-sex="딸">딸</button>
+                    </div>
+                </div>
                 <p id="thank-you-msg" class="hidden">소중한 경험을 나누어 주셔서 감사합니다.</p>
             </div>
 
@@ -113,7 +122,7 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script.js?v=5"></script>
 </body>
 
 </html>

@@ -113,7 +113,7 @@ header {
 h1 {
     font-family: 'Noto Serif KR', serif;
     font-weight: 300;
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     letter-spacing: -0.03em;
     margin-bottom: 0.8rem;
     background: linear-gradient(180deg, #fff 0%, #cbd5e1 100%);
@@ -140,6 +140,15 @@ h1 {
     position: relative;
     border: 1px solid rgba(255, 255, 255, 0.05);
     z-index: 2;
+}
+
+.tab-notice {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin: -1.5rem 0 2rem 0;
+    opacity: 0.8;
+    font-weight: 300;
 }
 
 .tab-btn {
@@ -478,6 +487,18 @@ input[type="number"]#predict-year:focus {
 }
 
 .feedback-btn.no:hover {
+    border-color: var(--accent-pink);
+    color: var(--accent-pink);
+    box-shadow: 0 0 15px rgba(244, 114, 182, 0.2);
+}
+
+.feedback-btn.harmony-choice.blue:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    box-shadow: 0 0 15px rgba(96, 165, 250, 0.2);
+}
+
+.feedback-btn.harmony-choice.pink:hover {
     border-color: var(--accent-pink);
     color: var(--accent-pink);
     box-shadow: 0 0 15px rgba(244, 114, 182, 0.2);

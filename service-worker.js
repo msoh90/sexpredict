@@ -1,4 +1,4 @@
-const CACHE_NAME = 'family-rhythm-v2';
+const CACHE_NAME = 'family-rhythm-v3';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
@@ -38,14 +38,20 @@ self.addEventListener('activate', (event) => {
 
 // Fetch Event
 self.addEventListener('fetch', (event) => {
+    // Network-First Strategy for script/styles during debugging
     event.respondWith(
-        caches.match(event.request)
+        fetch(event.request)
             .then((response) => {
-                // Cache Hit - return response
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request);
+                // If network works, update cache and return
+                const responseClone = response.clone();
+                caches.open(CACHE_NAME).then((cache) => {
+                    cache.put(event.request, responseClone);
+                });
+                return response;
+            })
+            .catch(() => {
+                // If network fails, try cache
+                return caches.match(event.request);
             })
     );
 });
