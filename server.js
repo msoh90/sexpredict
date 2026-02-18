@@ -15,10 +15,21 @@ app.use(express.static('.')); // Serve static files (index.html, styles.css, scr
 // Google Sheets Setup
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 
-const auth = new google.auth.GoogleAuth({
-    keyFile: 'google-key.json',
-    scopes: SCOPES,
-});
+const authOptions = {};
+if (process.env.PRIVATE_KEY && process.env.CLIENT_EMAIL) {
+    // Production (Vercel) environment
+    authOptions.credentials = {
+        client_email: process.env.CLIENT_EMAIL,
+        private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+    };
+} else {
+    // Local environment
+    authOptions.keyFile = 'google-key.json';
+}
+authOptions.scopes = SCOPES;
+
+const auth = new google.auth.GoogleAuth(authOptions);
+
 
 
 const sheets = google.sheets({ version: 'v4', auth });
@@ -196,7 +207,11 @@ app.post('/api/record-harmony', async (req, res) => {
 
 
 
-app.listen(PORT, () => {
-    console.log(`Server running on http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on http://0.0.0.0:${PORT}`);
     if (!SPREADSHEET_ID) console.warn('WARNING: GOOGLE_SHEET_ID is missing from .env.local');
 });
+
+module.exports = app;
+
+
