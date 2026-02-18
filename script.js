@@ -429,16 +429,22 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(res => {
-                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+            .then(async res => {
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({}));
+                    const detailMsg = errorData.error || errorData.details || 'Internal Server Error';
+                    const envInfo = errorData.envCheck ?
+                        `\n(ID: ${errorData.envCheck.hasSheetId}, Email: ${errorData.envCheck.hasEmail}, Key: ${errorData.envCheck.hasKey})` : '';
+                    throw new Error(`${detailMsg}${envInfo}`);
+                }
                 return res.json();
             })
             .then(data => console.log('Complete Save Success:', data))
             .catch(err => {
                 console.error('Complete Save Error:', err);
-                const errorMsg = err.message || '알 수 없는 오류';
-                alert(`저장 실패: ${errorMsg}\n\n1. Vercel 환경 변수 설정을 확인해 주세요.\n2. 서비스 계정 권한을 확인해 주세요.`);
+                alert(`저장 실패:\n${err.message}\n\n위의 에러 메시지를 확인하여 환경 변수 설정을 점검해 주세요.`);
             });
+
 
 
     };

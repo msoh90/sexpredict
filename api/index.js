@@ -202,9 +202,19 @@ app.post('/api/record-harmony', async (req, res) => {
     } catch (error) {
         const errData = error.response ? error.response.data : error.message;
         console.error('[Error] Google API failure:', errData);
-        res.status(500).json({ error: 'Failed to record data', details: errData });
+        // Temporarily exposing detailed error to the client for easier debugging on mobile
+        res.status(500).json({
+            error: 'Failed to record data',
+            details: errData,
+            envCheck: {
+                hasSheetId: !!process.env.GOOGLE_SHEET_ID,
+                hasEmail: !!process.env.CLIENT_EMAIL,
+                hasKey: !!process.env.PRIVATE_KEY
+            }
+        });
     }
 });
+
 
 
 
