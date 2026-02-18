@@ -1,4 +1,3 @@
-require('dotenv').config({ path: '.env.local' });
 const express = require('express');
 const { google } = require('googleapis');
 const cors = require('cors');
@@ -31,25 +30,25 @@ authOptions.scopes = SCOPES;
 
 const auth = new google.auth.GoogleAuth(authOptions);
 
-
-
 const sheets = google.sheets({ version: 'v4', auth });
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEETS_API_KEY;
 
-
-// Debug Endpoint: Check if Vercel sees the Environment Variables
+// Debug Endpoint: Check EVERYTHING Vercel sees
 app.get('/api/debug', (req, res) => {
+    const allKeys = Object.keys(process.env);
     res.json({
-        availableKeys: Object.keys(process.env).filter(key =>
-            key.includes('GOOGLE') || key.includes('SHEET') || key.includes('EMAIL') || key.includes('PRIVATE')
+        allKeysLength: allKeys.length,
+        matchedKeys: allKeys.filter(key =>
+            /GOOGLE|SHEET|EMAIL|PRIVATE/i.test(key)
         ),
+        allKeysPreview: allKeys.slice(0, 15),
         NODE_ENV: process.env.NODE_ENV,
+        VERCEL_ENV: process.env.VERCEL_ENV,
         timestamp: new Date().toISOString()
     });
 });
 
 // API Endpoint to record data
-
 app.post('/api/record-harmony', async (req, res) => {
     try {
         console.log('[API] Processing Payload:', JSON.stringify(req.body, null, 2));
@@ -220,7 +219,7 @@ app.post('/api/record-harmony', async (req, res) => {
             error: 'Failed to record data',
             details: errData,
             envCheck: {
-                hasSheetId: !!process.env.GOOGLE_SHEET_ID,
+                hasSheetId: !!process.env.GOOGLE_SHEET_ID || !!process.env.GOOGLE_SHEETS_API_KEY,
                 hasEmail: !!process.env.CLIENT_EMAIL,
                 hasKey: !!process.env.PRIVATE_KEY
             }
@@ -228,22 +227,9 @@ app.post('/api/record-harmony', async (req, res) => {
     }
 });
 
-
-
-
-// Build Trigger #2: Triggering redeploy after environment variable setup
+// Trigger redeploy
 app.listen(PORT, '0.0.0.0', () => {
-
-    // Build Trigger #3: Redeploying after fixing PRIVATE_KEY double quote issue
     console.log(`Server running on http://0.0.0.0:${PORT}`);
-
-    if (!SPREADSHEET_ID) console.warn('WARNING: GOOGLE_SHEET_ID is missing from .env.local');
 });
 
-// Build Trigger: Manual update to redeploy to Vercel
-// Build Trigger #4: Manual trigger at 2026-02-18 18:18
 module.exports = app;
-
-
-
-
