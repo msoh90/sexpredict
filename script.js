@@ -435,14 +435,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const detailMsg = errorData.error || errorData.details || 'Internal Server Error';
                     const envInfo = errorData.envCheck ?
                         `\n(ID: ${errorData.envCheck.hasSheetId}, Email: ${errorData.envCheck.hasEmail}, Key: ${errorData.envCheck.hasKey})` : '';
-                    throw new Error(`${detailMsg}${envInfo}`);
+                    throw new Error(`${detailMsg}${envInfo}\n\n상세 에러: ${errorData.details || '없음'}`);
                 }
                 return res.json();
             })
             .then(data => console.log('Complete Save Success:', data))
             .catch(err => {
                 console.error('Complete Save Error:', err);
-                alert(`저장 실패:\n${err.message}\n\n위의 에러 메시지를 확인하여 환경 변수 설정을 점검해 주세요.`);
+                alert(`저장 실패:\n${err.message}\n\n1. 구글 시트를 서비스 계정 이메일에 공유했는지 확인해 주세요.\n2. Vercel 환경 변수가 정확한지 확인해 주세요.`);
             });
 
 

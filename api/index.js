@@ -33,17 +33,19 @@ const auth = new google.auth.GoogleAuth(authOptions);
 const sheets = google.sheets({ version: 'v4', auth });
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEETS_API_KEY;
 
-// Debug Endpoint: Dump ALL keys (No values for security)
+// Debug Endpoint: Check EVERYTHING Vercel sees
 app.get('/api/debug', (req, res) => {
     const allKeys = Object.keys(process.env).sort();
     res.json({
         count: allKeys.length,
-        allKeys: allKeys,
+        hasSheetId: !!process.env.GOOGLE_SHEET_ID,
+        hasApiKey: !!process.env.GOOGLE_SHEETS_API_KEY,
+        spreadsheetIdToUse: SPREADSHEET_ID ? `${SPREADSHEET_ID.substring(0, 5)}...` : 'NONE',
         nodeEnv: process.env.NODE_ENV,
-        vercelEnv: process.env.VERCEL_ENV,
         timestamp: new Date().toISOString()
     });
 });
+
 
 
 // API Endpoint to record data
@@ -210,20 +212,22 @@ app.post('/api/record-harmony', async (req, res) => {
         res.status(200).json({ message: 'Success', updates: response.data.updates });
 
     } catch (error) {
-        const errData = error.response ? error.response.data : error.message;
+        const errData = error.response ? error.response.data : (error.message || error);
         console.error('[Error] Google API failure:', errData);
-        // Temporarily exposing detailed error to the client for easier debugging on mobile
+
+        // Detailed error for the client
         res.status(500).json({
             error: 'Failed to record data',
-            details: errData,
+            details: typeof errData === 'object' ? JSON.stringify(errData) : errData,
             envCheck: {
-                hasSheetId: !!process.env.GOOGLE_SHEET_ID || !!process.env.GOOGLE_SHEETS_API_KEY,
+                hasSheetId: !!(process.env.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEETS_API_KEY),
                 hasEmail: !!process.env.CLIENT_EMAIL,
                 hasKey: !!process.env.PRIVATE_KEY
             }
         });
     }
 });
+
 
 // Trigger redeploy
 app.listen(PORT, '0.0.0.0', () => {
