@@ -34,9 +34,22 @@ const auth = new google.auth.GoogleAuth(authOptions);
 
 
 const sheets = google.sheets({ version: 'v4', auth });
-const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID;
+const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEETS_API_KEY;
+
+
+// Debug Endpoint: Check if Vercel sees the Environment Variables
+app.get('/api/debug', (req, res) => {
+    res.json({
+        availableKeys: Object.keys(process.env).filter(key =>
+            key.includes('GOOGLE') || key.includes('SHEET') || key.includes('EMAIL') || key.includes('PRIVATE')
+        ),
+        NODE_ENV: process.env.NODE_ENV,
+        timestamp: new Date().toISOString()
+    });
+});
 
 // API Endpoint to record data
+
 app.post('/api/record-harmony', async (req, res) => {
     try {
         console.log('[API] Processing Payload:', JSON.stringify(req.body, null, 2));
