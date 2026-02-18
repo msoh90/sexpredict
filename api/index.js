@@ -33,20 +33,18 @@ const auth = new google.auth.GoogleAuth(authOptions);
 const sheets = google.sheets({ version: 'v4', auth });
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEETS_API_KEY;
 
-// Debug Endpoint: Check EVERYTHING Vercel sees
+// Debug Endpoint: Dump ALL keys (No values for security)
 app.get('/api/debug', (req, res) => {
-    const allKeys = Object.keys(process.env);
+    const allKeys = Object.keys(process.env).sort();
     res.json({
-        allKeysLength: allKeys.length,
-        matchedKeys: allKeys.filter(key =>
-            /GOOGLE|SHEET|EMAIL|PRIVATE/i.test(key)
-        ),
-        allKeysPreview: allKeys.slice(0, 15),
-        NODE_ENV: process.env.NODE_ENV,
-        VERCEL_ENV: process.env.VERCEL_ENV,
+        count: allKeys.length,
+        allKeys: allKeys,
+        nodeEnv: process.env.NODE_ENV,
+        vercelEnv: process.env.VERCEL_ENV,
         timestamp: new Date().toISOString()
     });
 });
+
 
 // API Endpoint to record data
 app.post('/api/record-harmony', async (req, res) => {
