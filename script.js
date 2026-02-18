@@ -424,14 +424,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
         console.log('[DEBUG] Final Save Payload:', payload);
 
-        fetch('http://localhost:3000/api/record-harmony', {
+        fetch('/api/record-harmony', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                return res.json();
+            })
             .then(data => console.log('Complete Save Success:', data))
-            .catch(err => console.error('Complete Save Error:', err));
+            .catch(err => {
+                console.error('Complete Save Error:', err);
+                alert('데이터 저장 중 오류가 발생했습니다. 서버 상태를 확인해주세요.');
+            });
+
     };
 
     // Feedback Listeners
