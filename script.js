@@ -436,8 +436,10 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => console.log('Complete Save Success:', data))
             .catch(err => {
                 console.error('Complete Save Error:', err);
-                alert('데이터 저장 중 오류가 발생했습니다. 서버 상태를 확인해주세요.');
+                const errorMsg = err.message || '알 수 없는 오류';
+                alert(`저장 실패: ${errorMsg}\n\n1. Vercel 환경 변수 설정을 확인해 주세요.\n2. 서비스 계정 권한을 확인해 주세요.`);
             });
+
 
     };
 
