@@ -212,6 +212,8 @@ app.listen(PORT, '0.0.0.0', () => {
     if (!SPREADSHEET_ID) console.warn('WARNING: GOOGLE_SHEET_ID is missing from .env.local');
 });
 
+// Build Trigger: Manual update to redeploy to Vercel
 module.exports = app;
+
 
 
