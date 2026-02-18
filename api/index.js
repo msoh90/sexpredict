@@ -218,7 +218,9 @@ app.post('/api/record-harmony', async (req, res) => {
 
 
 
+// Build Trigger #2: Triggering redeploy after environment variable setup
 app.listen(PORT, '0.0.0.0', () => {
+
     console.log(`Server running on http://0.0.0.0:${PORT}`);
     if (!SPREADSHEET_ID) console.warn('WARNING: GOOGLE_SHEET_ID is missing from .env.local');
 });
