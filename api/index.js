@@ -41,21 +41,6 @@ const auth = new google.auth.GoogleAuth(authOptions);
 const sheets = google.sheets({ version: 'v4', auth });
 const SPREADSHEET_ID = process.env.GOOGLE_SHEET_ID || process.env.GOOGLE_SHEETS_API_KEY;
 
-// Debug Endpoint: Check EVERYTHING Vercel sees
-app.get('/api/debug', (req, res) => {
-    const allKeys = Object.keys(process.env).sort();
-    res.json({
-        count: allKeys.length,
-        hasSheetId: !!process.env.GOOGLE_SHEET_ID,
-        hasApiKey: !!process.env.GOOGLE_SHEETS_API_KEY,
-        spreadsheetIdToUse: SPREADSHEET_ID ? `${SPREADSHEET_ID.substring(0, 5)}...` : 'NONE',
-        nodeEnv: process.env.NODE_ENV,
-        timestamp: new Date().toISOString()
-    });
-});
-
-
-
 // API Endpoint to record data
 app.post('/api/record-harmony', async (req, res) => {
     try {

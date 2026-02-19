@@ -429,21 +429,19 @@ document.addEventListener('DOMContentLoaded', () => {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         })
-            .then(async res => {
-                if (!res.ok) {
-                    const errorData = await res.json().catch(() => ({}));
-                    const detailMsg = errorData.error || errorData.details || 'Internal Server Error';
-                    const envInfo = errorData.envCheck ?
-                        `\n(ID: ${errorData.envCheck.hasSheetId}, Email: ${errorData.envCheck.hasEmail}, Key: ${errorData.envCheck.hasKey})` : '';
-                    throw new Error(`${detailMsg}${envInfo}\n\n상세 에러: ${errorData.details || '없음'}`);
-                }
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
                 return res.json();
             })
-            .then(data => console.log('Complete Save Success:', data))
+            .then(data => {
+                console.log('Complete Save Success:', data);
+                alert('데이터가 성공적으로 저장되었습니다!');
+            })
             .catch(err => {
                 console.error('Complete Save Error:', err);
-                alert(`저장 실패:\n${err.message}\n\n1. 구글 시트를 서비스 계정 이메일에 공유했는지 확인해 주세요.\n2. Vercel 환경 변수가 정확한지 확인해 주세요.`);
+                alert('데이터 저장 중 오류가 발생했습니다. 서버 상태를 확인해주세요.');
             });
+
 
 
 
