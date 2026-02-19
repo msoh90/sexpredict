@@ -435,8 +435,8 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(data => {
                 console.log('Complete Save Success:', data);
-                alert('데이터가 성공적으로 저장되었습니다!');
             })
+
             .catch(err => {
                 console.error('Complete Save Error:', err);
                 alert('데이터 저장 중 오류가 발생했습니다. 서버 상태를 확인해주세요.');
