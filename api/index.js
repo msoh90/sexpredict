@@ -17,11 +17,19 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 const authOptions = {};
 if (process.env.PRIVATE_KEY && process.env.CLIENT_EMAIL) {
     // Production (Vercel) environment
+    let key = process.env.PRIVATE_KEY;
+
+    // Remove surroundings quotes if the user accidentally pasted them
+    if (key.startsWith('"') && key.endsWith('"')) {
+        key = key.substring(1, key.length - 1);
+    }
+
     authOptions.credentials = {
         client_email: process.env.CLIENT_EMAIL,
-        private_key: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
+        private_key: key.replace(/\\n/g, '\n'),
     };
-} else {
+}
+else {
     // Local environment
     authOptions.keyFile = '../google-key.json';
 }
